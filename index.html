@@ -342,7 +342,7 @@ function perr(t){var e=document.getElementById("perr");if(e){e.textContent=t;if(
 function showPrev(html){var e=document.getElementById("pprev");if(e){e.innerHTML='<div class="pp">'+html+'<button class="back" style="padding:0" onclick="ppClr()">Retirer</button></div>';tr()}}
 function ppClr(){PM=null;var e=document.getElementById("pprev");if(e)e.innerHTML=""}
 function ppick(inp,kind){var f=inp.files&&inp.files[0];inp.value="";if(!f||!canPost())return;perr("");
- if(kind=="vid"){if(f.size>MAXB){perr("Fichier trop lourd (50 Mo maximum).");return}PM={k:"vid",b:f};showPrev('<span class="lab">'+ic("video",20)+'<span>Vidéo sélectionnée : '+esc(f.name)+'</span></span>');return}
+ if(kind=="vid"){if(f.size>MAXB){perr("Fichier trop lourd (300 Mo maximum).");return}PM={k:"vid",b:f};showPrev('<span class="lab">'+ic("video",20)+'<span>Vidéo sélectionnée : '+esc(f.name)+'</span></span>');return}
  var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var s=Math.min(1,1024/Math.max(im.width,im.height)),w=Math.round(im.width*s),hh=Math.round(im.height*s),c=document.createElement("canvas");c.width=w;c.height=hh;c.getContext("2d").drawImage(im,0,0,w,hh);c.toBlob(function(b){PM={k:"img",b:b,w:w,ht:hh};showPrev('<img class="mm" src="'+c.toDataURL("image/jpeg",.6)+'" alt="">')},"image/jpeg",.72)};im.src=r.result};r.readAsDataURL(f)}
 function publier(){if(!canPost())return;var t=document.getElementById("txt").value.trim();if(!t&&!PM)return;
  var o={t:t,l:0,a:S.me?S.me.n:"Admin",h:new Date().toLocaleString("fr-FR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})},
@@ -409,7 +409,7 @@ function push(i,o,b){var c=S.data.coms[i];if(!c||!(S.admin||S.my[c.t]==2))return
 function envoyer(){var el=document.getElementById("gm"),t=el.value.trim();if(!t)return;push(S.sub,{k:"txt",t:t})}
 function pickMedia(inp,kind){var f=inp.files&&inp.files[0];inp.value="";if(!f)return;gerr("");
  if(kind=="aud"){if(f.size>MAXB){gerr("Fichier trop lourd (50 Mo maximum).");return}push(S.sub,{k:"aud",d:0},f);return}
- if(kind=="vid"){if(f.size>MAXB){gerr("Fichier trop lourd (50 Mo maximum).");return}push(S.sub,{k:"vid"},f);return}
+ if(kind=="vid"){if(f.size>MAXB){gerr("Fichier trop lourd (300 Mo maximum).");return}push(S.sub,{k:"vid"},f);return}
  var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var s=Math.min(1,1024/Math.max(im.width,im.height)),w=Math.round(im.width*s),h=Math.round(im.height*s),c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(im,0,0,w,h);c.toBlob(function(b){push(S.sub,{k:"img",w:w,h:h},b)},"image/jpeg",.72)};im.src=r.result};r.readAsDataURL(f)}
 function sendLoc(){gerr("");var m="Position indisponible. Autorisez la localisation sur votre téléphone.";document.getElementById("att").hidden=true;
  if(typeof navigator=="undefined"||!navigator.geolocation){gerr(m);return}
@@ -523,20 +523,20 @@ Object.assign(E,{"Bientôt disponible":"Gbɔna kpuie","Lien à renseigner":"Ŋl�
 "Les liens doivent commencer par https://":"Kadodowo nadze egɔme kple https://","Seuls les membres de la commission Communication peuvent publier ici. Tout le monde peut voir et aimer les publications.":"Communication ƒe dɔwɔha ƒe hamevi koe ate ŋu aɖe nu go afi sia. Ame ɖesiaɖe ate ŋu akpɔ eye wòalɔ̃ nuŋɔŋlɔwo.",
 "Aucune publication pour le moment.":"Nuŋɔŋlɔ aɖeke meli fifia o.","Modifier la publication":"Trɔ nuŋɔŋlɔ la","Retirer":"Ɖee ɖa"});
 PX["Vidéo sélectionnée : "]="Video si wotia : ";
-var MAXB=50*1024*1024,REC=null;
+var MAXB=300*1024*1024,REC=null;
 Object.assign(IC,{mic:'<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/>'});
 function dur(s){return Math.floor(s/60)+":"+("0"+s%60).slice(-2)}
 function recErr(){S.modal={type:"recerr"};draw()}
-function recOpen(cb,lbl,au){
+function recOpen(cb,lbl,au,opt){opt=opt||{};
  if(typeof navigator=="undefined"||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||typeof MediaRecorder=="undefined"){if(au)au.pause();recErr();return}
  navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
-  var tp=["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg"].filter(function(t){return MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t)})[0],mr=tp?new MediaRecorder(st,{mimeType:tp,audioBitsPerSecond:24000}):new MediaRecorder(st,{audioBitsPerSecond:24000}),ch=[],t0=Date.now();
+  var tp=["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg"].filter(function(t){return MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t)})[0],mr=tp?new MediaRecorder(st,{mimeType:tp,audioBitsPerSecond:opt.br||24000}):new MediaRecorder(st,{audioBitsPerSecond:opt.br||24000}),ch=[],t0=Date.now();
   mr.ondataavailable=function(e){if(e.data&&e.data.size)ch.push(e.data)};
   REC={mr:mr,send:false};
   mr.onstop=function(){st.getTracks().forEach(function(t){t.stop()});if(au)au.pause();var R=REC;REC=null;if(R&&R.iv)clearInterval(R.iv);S.modal=null;
    if(R&&R.send&&ch.length)cb(new Blob(ch,{type:tp||mr.mimeType||"audio/webm"}),Math.round((Date.now()-t0)/1000));else draw()};
   S.modal={type:"rec",lbl:lbl,hint:!!au};draw();mr.start();
-  REC.iv=setInterval(function(){var s=Math.round((Date.now()-t0)/1000),e=document.getElementById("rect");if(e)e.textContent=dur(s);if(s>=120)recStop(true)},500)
+  REC.iv=setInterval(function(){var s=Math.round((Date.now()-t0)/1000),e=document.getElementById("rect");if(e)e.textContent=dur(s);if(s>=(opt.max||120))recStop(true)},500)
  }).catch(function(){if(au)au.pause();recErr()})}
 function recStop(send){if(REC){REC.send=send;try{REC.mr.stop()}catch(e){}}}
 function audSection(c){var rows=["Audio complet"].concat(VOIX.slice(1).map(function(v){return "Audio "+v}));
@@ -551,10 +551,10 @@ Object.assign(E,{"Fichier trop lourd (50 Mo maximum).":"Nu la kpekpe akpa (50 Mo
 PX["Message vocal"]="Gbedasi";
 function addTake(i,b,d,sl){var c=S.data.chants[i];if(!c)return;mput(b).then(function(id){(S.takes[c.t]=S.takes[c.t]||[]).unshift({m:id,d:d,ts:Date.now(),g:sl||""});save();draw()}).catch(function(){serr("Impossible d’enregistrer ce fichier sur ce téléphone.")})}
 function takeDel(i,k){var c=S.data.chants[i];if(!c)return;ask("Supprimer cet enregistrement ?",function(){(S.takes[c.t]||[]).splice(k,1)})}
-function chanter(i){recOpen(function(b,d){addTake(i,b,d,"")},"Enregistrer")}
+function chanter(i){recOpen(function(b,d){addTake(i,b,d,"")},"Enregistrer",null,{max:600})}
 function chanterAvec(i,sl){var a=((S.data.chants[i]||{}).au||{})[sl];if(!a)return;var el=document.querySelector?document.querySelector('audio[data-m="'+a.m+'"]'):null;
  if(el){try{el.currentTime=0;var pr=el.play();if(pr&&pr.catch)pr.catch(function(){})}catch(e){}}
- recOpen(function(b,d){addTake(i,b,d,sl)},"Enregistrer",el)}
+ recOpen(function(b,d){addTake(i,b,d,sl)},"Enregistrer",el,{max:600})}
 function takesSection(i){var c=S.data.chants[i],T=S.takes[c.t]||[];
  return '<h3>Chanter</h3><p class="mut" style="margin-top:0">Enregistrez-vous pour vous écouter et progresser. Vos enregistrements restent sur ce téléphone.</p><button class="btn" onclick="chanter('+i+')">'+ic("mic",18)+' S’enregistrer en chantant</button>'+
  (T.length?T.map(function(t,k){return '<div class="li"><div class="row"><span class="lab">'+ic("mic",20)+'<span>'+new Date(t.ts).toLocaleString("fr-FR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+(t.d?' · '+dur(t.d):'')+'</span></span><span class="sa"><span class="mut">'+(t.g=="all"?"Avec l’audio complet":t.g?"Avec l’audio "+t.g:"Sans accompagnement")+'</span><button class="btn alt" onclick="takeDel('+i+','+k+')">Supprimer</button></span></div><audio class="au" data-m="'+t.m+'" controls preload="metadata"></audio></div>'}).join(""):'<p class="mut">Aucun enregistrement pour le moment.</p>')}
@@ -622,7 +622,7 @@ function fail2(e){info("Action impossible ("+((e&&e.code)||"erreur")+"). Vérifi
 
 /* ---- démarrage ---- */
 function boot(){
- try{firebase.initializeApp(FBCFG);fa=firebase.auth();db=firebase.firestore()}catch(e){bootErr(e);return}
+ try{firebase.initializeApp(FBCFG);fa=firebase.auth();db=firebase.firestore();try{db.enablePersistence({synchronizeTabs:true}).catch(function(){})}catch(x){}}catch(e){bootErr(e);return}
  fa.onAuthStateChanged(function(u){if(u){if(CL.uid!=u.uid){CL.uid=u.uid;startSubs()}}else{CL.uid=null;CL.ready=false;fa.signInAnonymously().catch(bootErr)}});
  setTimeout(function(){if(!CL.ready)bootErr({code:"délai dépassé"})},15000)}
 function bootErr(e){if(CL.ready)return;document.getElementById("main").innerHTML='<div class="card"><b>Connexion impossible</b><p class="mut">Vérifiez votre connexion internet, puis rouvrez l’application.</p><p class="mut">Code : '+esc((e&&e.code)||String(e))+'</p></div>'}
@@ -792,7 +792,7 @@ function profil(){var s=S.sub;
  return profil0()}
 function infoPage(){var m=S.me||{},ph=S.pf&&S.pf.photo;
  return back()+'<h2>Mes informations</h2><div style="text-align:center;margin:10px 0"><span id="ipvw">'+(ph?'<img class="av big" style="object-fit:cover" src="'+ph+'" alt="">':av(1))+'</span><br><label for="ipc" class="btn alt" style="display:inline-block;margin-top:10px">Changer la photo</label><input id="ipc" type="file" accept="image/*" hidden onchange="pickInfoPhoto(this)"></div>'+
- '<label class="fl" for="in">Nom complet</label><input id="in" autocomplete="name" value="'+esc(m.n||"")+'"><label class="fl" for="ip2">Numéro de téléphone</label><input id="ip2" type="tel" inputmode="tel" value="'+esc(m.p||"")+'"><p id="imsg" class="err"></p><button class="btn" style="width:100%" onclick="saveInfo()">Enregistrer</button>'}
+ '<label class="fl" for="in">Nom complet</label><input id="in" autocomplete="name" value="'+esc(m.n||"")+'"><label class="fl" for="ip2">Numéro de téléphone</label><input id="ip2" type="tel" inputmode="tel" value="'+esc(m.p||"")+'"><label class="fl" for="ibd">Anniversaire (facultatif)</label><input id="ibd" type="date" value="'+esc(bdVal())+'"><p class="mut" style="margin:4px 0 0;font-size:12px">Seuls le jour et le mois sont partagés avec les membres.</p><p id="imsg" class="err"></p><button class="btn" style="width:100%" onclick="saveInfo()">Enregistrer</button>'}
 function pickInfoPhoto(inp){var f=inp.files&&inp.files[0];inp.value="";if(!f)return;var r=new FileReader();
  r.onload=function(){var im=new Image();im.onload=function(){var cv=document.createElement("canvas"),s=Math.min(im.width,im.height),z=160;cv.width=cv.height=z;cv.getContext("2d").drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,z,z);
   S.pf={photo:cv.toDataURL("image/jpeg",.8)};var e=document.getElementById("ipvw");if(e)e.innerHTML='<img class="av big" style="object-fit:cover" src="'+S.pf.photo+'" alt="">'};im.src=r.result};r.readAsDataURL(f)}
@@ -800,7 +800,7 @@ function saveInfo(){var n=document.getElementById("in").value.trim(),p=document.
  var err=n.length<2?"Entrez votre nom (2 lettres au moins).":(p.replace(/\D/g,"").length<8?"Entrez un numéro de téléphone valide.":"");
  if(err){e.className="err";e.textContent=err;tr();return}
  var b=db.batch(),ph=(S.pf&&S.pf.photo)||(S.me&&S.me.ph)||"";
- b.update(db.doc("users/"+CL.uid),{name:n,photo:ph});b.set(db.doc("private/"+CL.uid),{phone:p});
+ b.update(db.doc("users/"+CL.uid),{name:n,photo:ph,bd:bdRead()});b.set(db.doc("private/"+CL.uid),{phone:p});
  b.commit().then(function(){S.pf=null;e.className="ok";e.textContent="Enregistré.";tr()}).catch(function(x){e.className="err";e.textContent="Enregistrement impossible ("+((x&&x.code)||"erreur")+").";tr()})}
 function mesComs(){return back()+'<h2>Mes commissions</h2>'+S.data.coms.map(function(c,i){var e=S.my[c.t],a;
  if(e==2)a='<span class="tag">Membre validé</span> <button class="btn" onclick="go(\'commissions\','+i+')">Ouvrir le groupe</button>';
@@ -867,7 +867,7 @@ function dirPage(){var L=CL.bdir;
  (S.admin?'<p class="mut">Pour donner les droits du bureau à un membre inscrit, validez-le dans la commission Bureau ou dans « Membres et accès ».</p>':'')}
 function reglPage(){
  return backTo("")+'<h2>Règlement intérieur</h2>'+(S.admin?'<button class="btn" style="margin:0 0 12px" onclick="rec2(\'reg\')">+ Ajouter un article</button>':'')+
- (CL.regl.length?CL.regl.map(function(a){return '<div class="card"><b>'+esc(a.t)+'</b><div style="white-space:pre-wrap;margin-top:8px">'+esc(a.d||"")+'</div>'+(S.admin?tl("reg",a.id):'')+'</div>'}).join(""):'<div class="card mut">Le règlement intérieur n’a pas encore été publié.</div>')}
+ (CL.regl.length?CL.regl.map(function(a){return '<div class="card"><b>'+esc(a.t)+'</b><div style="white-space:pre-wrap;margin-top:8px">'+esc(a.d||"")+'</div>'+(a.pdf?pdfBtn("reg",a.id):'')+(S.admin?tl("reg",a.id):'')+'</div>'}).join(""):'<div class="card mut">Le règlement intérieur n’a pas encore été publié.</div>')}
 
 /* ---- membres inscrits et accès ---- */
 function memRow(u){var role=CL.roles[u.uid];return '<button class="li row" onclick="go(\'asso\',\'bur-m:'+u.uid+'\')"><span class="lab">'+avU(u.uid,u.name)+'<span><b>'+esc(u.name)+'</b>'+(role?'<br><span class="mut">'+esc(role)+'</span>':'')+'</span></span><span class="mut">›</span></button>'}
@@ -962,7 +962,7 @@ function decBlock(){var f=S.df||"Tous",L=CL.dec.slice().sort(function(a,b){retur
  (L.filter(function(d){return f=="Tous"||d.st==f}).map(function(d){return '<div class="card"><div class="row"><b>'+esc(d.ti)+'</b><button class="tag '+(d.st=="Exécutée"?'paid':d.st=="En cours"?'':'late')+'" style="border:0" onclick="nextDec(\''+d.id+'\')">'+esc(d.st||"À faire")+'</button></div>'+(d.tx?'<p class="mut" style="margin:6px 0 0;white-space:pre-wrap">'+esc(d.tx)+'</p>':'')+tl("dec",d.id)+'</div>'}).join("")||'<div class="card mut">Aucune décision.</div>')}
 function rapPage(){var f=S.rf||"Tous",L=byDt(CL.rap.filter(function(r){return f=="Tous"||r.ty==f}));
  return backTo("")+'<h2>Rapports et comptes rendus</h2><div class="chips" style="margin-bottom:12px">'+["Tous","Assemblée générale","Réunion du bureau","Autre"].map(function(x){return '<button class="chip'+(x==f?' on':'')+'" onclick="S.rf=\''+x+'\';draw()">'+x+'</button>'}).join("")+'</div><button class="btn" style="margin-bottom:12px" onclick="rec2(\'rap\')">+ Ajouter un rapport</button>'+
- (L.length?L.map(function(r){return '<div class="card"><div class="row"><b>'+esc(r.ti)+'</b><span class="tag">'+esc(r.ty||"")+'</span></div><p class="mut" style="margin:4px 0 8px">'+esc(fdt(r.dt))+'</p><div style="white-space:pre-wrap">'+esc(r.tx||"")+'</div>'+tl("rap",r.id)+'</div>'}).join(""):'<div class="card mut">Aucun rapport enregistré.</div>')+
+ (L.length?L.map(function(r){return '<div class="card"><div class="row"><b>'+esc(r.ti)+'</b><span class="tag">'+esc(r.ty||"")+'</span></div><p class="mut" style="margin:4px 0 8px">'+esc(fdt(r.dt))+'</p><div style="white-space:pre-wrap">'+esc(r.tx||"")+'</div>'+(r.pdf?pdfBtn("rap",r.id):'')+tl("rap",r.id)+'</div>'}).join(""):'<div class="card mut">Aucun rapport enregistré.</div>')+
  '<h3>Décisions et idées</h3>'+decBlock()}
 function nextDec(id){if(!S.admin)return;var d=CL.dec.filter(function(x){return x.id==id})[0];if(!d)return;var o=["À faire","En cours","Exécutée"],n=o[(o.indexOf(d.st||"À faire")+1)%3];db.collection("decisions").doc(id).set({st:n},{merge:true}).catch(fail2)}
 
@@ -1169,17 +1169,263 @@ function publier(){if(!canPost())return;var el=document.getElementById("txt"),t=
  var doc={uid:CL.uid,an:S.me?S.me.n:"",t:t,ts:TS()},pm=PM;
  var fin=function(u){if(u&&pm){doc.k=pm.k;doc.m=u;if(pm.w){doc.w=pm.w;doc.ht=pm.ht}}
   db.collection("posts").add(doc).then(function(){el.value="";ppClr()}).catch(function(e){perr("Publication impossible ("+((e&&e.code)||"erreur")+").")})};
- if(pm&&pm.k=="vid"){if(S.vbusy)return;S.vbusy=1;perr("Envoi de la vidéo… 0 %");
-  vidUp(pm.b,"posts",function(p){perr("Envoi de la vidéo… "+p+" %")}).then(function(u){S.vbusy=0;perr("");fin(u)}).catch(function(e){S.vbusy=0;perr(vidErr(e))})}
+ if(pm&&pm.k=="vid"){if(S.vbusy)return;S.vbusy=1;perr("Préparation de la vidéo…");
+  vidUp(pm.b,"posts",function(p){perr(vtxt(p))}).then(function(u){S.vbusy=0;perr("");fin(u)}).catch(function(e){S.vbusy=0;perr(vidErr(e))})}
  else if(pm)mputC(pm.b).then(fin).catch(function(e){perr(e&&e.code=="big"?"Image trop lourde.":"Impossible d’enregistrer ce fichier.")});else fin()}
 var _push=push;
 push=function(i,o,b){var c=S.data.coms[i];if(!c||!(S.admin||S.appr[c.id]))return;
- if(b&&o.k=="vid"){if(S.vbusy)return;S.vbusy=1;gerr("Envoi de la vidéo… 0 %");
-  vidUp(b,"groups/"+c.id,function(p){gerr("Envoi de la vidéo… "+p+" %")}).then(function(u){S.vbusy=0;gerr("");
+ if(b&&o.k=="vid"){if(S.vbusy)return;S.vbusy=1;gerr("Préparation de la vidéo…");
+  vidUp(b,"groups/"+c.id,function(p){gerr(vtxt(p))}).then(function(u){S.vbusy=0;gerr("");
    db.collection("groups").doc(c.id).collection("messages").add({uid:CL.uid,an:S.me?S.me.n:"Admin",ts:TS(),k:"vid",m:u}).catch(function(e){gerr("Envoi impossible ("+((e&&e.code)||"erreur")+").")})}).catch(function(e){S.vbusy=0;gerr(vidErr(e))});return}
  _push(i,o,b)};
 var _hyd=hydrate;
 hydrate=function(){document.querySelectorAll("video[data-m]").forEach(function(e){if(e._h)return;var m=e.getAttribute("data-m");if(m&&m.slice(0,4)=="http"){e._h=1;e.src=m;e.preload="metadata"}});_hyd()};
+
+/* ===== Groupes : supprimer un message (son auteur ou le bureau) ===== */
+var _bubM=bub;
+bub=function(g){var h=_bubM(g);if(!g||!g.id)return h;var mine=!!g.uid&&g.uid==CL.uid;if(!(S.admin||mine))return h;
+ return h.replace('<div class="bt">','<div class="bt"><button class="back" style="padding:0 8px 0 0;opacity:.75" aria-label="Supprimer le message" onclick="msgDel(\''+g.id+'\')">🗑️</button>')};
+function msgDel(id){var c=S.data.coms[S.sub];if(!c)return;var G=S.groups[c.t]||[],g=G.filter(function(x){return x.id==id})[0];if(!g)return;if(!(S.admin||(g.uid&&g.uid==CL.uid)))return;
+ ask("Supprimer ce message ?",function(){
+  db.collection("groups").doc(c.id).collection("messages").doc(id).delete().then(function(){
+   if(g.k=="vid"&&g.m&&String(g.m).slice(0,4)=="http"&&typeof firebase.storage=="function"){try{firebase.storage().refFromURL(g.m).delete().catch(function(){})}catch(e){}}
+  }).catch(function(e){gerr("Suppression impossible ("+((e&&e.code)||"erreur")+").")})},"Supprimer")}
+
+/* ===== Suppression d'une publication : retire aussi la vidéo de Storage ===== */
+suppr=function(i){var p=S.posts[i];if(!p||!(S.admin||canPost()))return;
+ ask("Supprimer cette publication ?",function(){db.collection("posts").doc(p.id).delete().then(function(){
+  if(p.k=="vid"&&p.m&&String(p.m).slice(0,4)=="http"&&typeof firebase.storage=="function"){try{firebase.storage().refFromURL(p.m).delete().catch(function(){})}catch(e){}}
+ }).catch(fail2)},"Supprimer")};
+
+/* ===== Musique : voix des pupitres (enregistrées dans la base, partagées avec les membres) ===== */
+var MAXVOX=700*1024,VOXOPT={br:16000,max:300};
+function ensureVoices(id){CL.vsub=CL.vsub||{};CL.voices=CL.voices||{};if(CL.vsub[id])return;
+ CL.vsub[id]=db.collection("chants").doc(id).collection("voices").onSnapshot(function(q){var o={};q.docs.forEach(function(d){var x=d.data({serverTimestamps:"estimate"});if(typeof x.m=="string"&&x.m.slice(0,5)=="data:")x.m=mkey(x.m);o[d.id]={m:x.m,d:x.d||0,n:x.n||""}});CL.voices[id]=o;rd()},function(e){console.warn("voices",e&&e.code)})}
+function b2u(b){return new Promise(function(ok,ko){var r=new FileReader();r.onload=function(){ok(r.result)};r.onerror=ko;r.readAsDataURL(b)})}
+function voxSave(sl,b,d,n){var c=S.data.chants[S.sub];if(!S.admin)return;if(!c||!c.id){info("Ajoutez d’abord ce chant avec le bouton « Ajouter un chant ».");return}
+ if(b.size>MAXVOX){serr("Fichier trop lourd (700 Ko maximum). Enregistrez avec le micro (5 minutes maximum) ou importez un fichier plus court.");return}
+ b2u(b).then(function(u){return db.collection("chants").doc(c.id).collection("voices").doc(sl).set({m:u,d:d||0,n:n||"",ts:TS()})}).catch(function(e){serr("Impossible d’enregistrer cette voix ("+((e&&e.code)||"erreur")+").")})}
+function voxRec(sl){if(!S.admin)return;recOpen(function(b,d){voxSave(sl,b,d,"Enregistrement")},"Enregistrer",null,VOXOPT)}
+function voxUp(sl){if(!S.admin)return;S.slot=sl;var e=document.getElementById("sa");if(e)e.click()}
+function voxPick(inp){var f=inp.files&&inp.files[0];inp.value="";if(!f||!S.admin)return;serr("");voxSave(S.slot,f,0,f.name)}
+function voxDel(sl){var c=S.data.chants[S.sub];if(!S.admin||!c||!c.id)return;ask("Supprimer cette voix ?",function(){db.collection("chants").doc(c.id).collection("voices").doc(sl).delete().catch(fail2)},"Supprimer")}
+function chanterAvec(i,sl){var c=S.data.chants[i],a=c&&c.id&&((CL.voices||{})[c.id]||{})[sl];if(!a)return;
+ var el=document.querySelector?document.querySelector('audio[data-m="'+a.m+'"]'):null;
+ if(el){try{el.currentTime=0;var pr=el.play();if(pr&&pr.catch)pr.catch(function(){})}catch(e){}}
+ recOpen(function(b,d){addTake(i,b,d,sl)},"Enregistrer",el,{max:600})}
+function chantPage(c){var i=S.sub,V=(c.id&&(CL.voices||{})[c.id])||{},sc=(c.sc||{}).all;if(c.id)ensureVoices(c.id);
+ var part='<div class="li row"><span class="lab">'+ic("file",20)+'<span>Partition complète</span></span><span class="sa">'+(sc?'<button class="btn" onclick="openScore('+i+',\'all\')">Ouvrir</button>':'<span class="tag">Pas encore disponible</span>')+(S.admin?'<button class="btn alt" onclick="scoreUp(\'all\')">'+(sc?'Remplacer':'Ajouter')+'</button>'+(sc?'<button class="btn alt" onclick="scoreDel('+i+',\'all\')">Supprimer</button>':''):'')+'</span></div>';
+ var vox=VOIX.slice(1).map(function(v){var a=V[v];return '<div class="li"><div class="row"><span class="lab">'+ic("mic",20)+'<span>'+v+'</span></span><span class="sa">'+(a?'<button class="btn" onclick="chanterAvec('+i+',\''+v+'\')">'+ic("mic",16)+' Chanter avec</button>':'<span class="tag">Pas encore disponible</span>')+(S.admin?'<button class="btn alt" onclick="voxRec(\''+v+'\')">'+ic("mic",16)+' Enregistrer</button><button class="btn alt" onclick="voxUp(\''+v+'\')">Importer</button>'+(a?'<button class="btn alt" onclick="voxDel(\''+v+'\')">Supprimer</button>':''):'')+'</span></div>'+(a?'<audio class="au" data-m="'+a.m+'" controls preload="metadata"></audio>':'')+'</div>'}).join("");
+ return back()+'<h2>'+esc(c.t)+'</h2><p class="mut">Voix : '+esc(c.d)+'</p>'+tools("chants",i)+'<div style="margin-top:14px">'+part+'</div><h3>Voix des pupitres</h3>'+vox+(S.admin?'<input id="sp" type="file" accept="application/pdf" hidden onchange="pickScore(this)"><input id="sa" type="file" accept="audio/*" hidden onchange="voxPick(this)">':'')+takesSection(i)+'<p id="serr" class="err"></p>'}
+var _musV=musique;musique=function(){var C=S.data.chants;if(S.sub!=null&&C[S.sub])return chantPage(C[S.sub]);return _musV()};
+
+/* ===== PDF dans le Règlement intérieur et les Rapports ===== */
+SCH.reg.f.push(["pdf","PDF (facultatif, jusqu’à 20 Mo)","pdf"]);SCH.rap.f.push(["pdf","PDF (facultatif, jusqu’à 20 Mo)","pdf"]);
+function pdfSt(m,o){return m.pdfb?"📄 "+esc(m.pdfn||"PDF")+" (sera enregistré)":(m.pdfclr?"Aucun PDF":(o&&o.pdf?"📄 PDF déjà enregistré":"Aucun PDF"))}
+function recOld(m){return m.id?(listOf(m.k).filter(function(x){return x.id==m.id})[0]||{}):{}}
+function rpdfPick(inp){var f=inp.files&&inp.files[0];inp.value="";var m=S.modal,er=document.getElementById("rferr");if(!f||!m||m.type!="rec2")return;
+ if(!(f.type=="application/pdf"||/\.pdf$/i.test(f.name))){if(er)er.textContent="Choisissez un fichier PDF.";return}
+ if(f.size>20*1024*1024){if(er)er.textContent="PDF trop lourd (20 Mo maximum).";return}
+ if(er)er.textContent="";m.pdfb=f;m.pdfn=f.name;m.pdfclr=0;var e=document.getElementById("rpdfst");if(e)e.innerHTML=pdfSt(m,recOld(m))}
+function rpdfClr(){var m=S.modal;if(!m)return;m.pdfb=null;m.pdfclr=1;var e=document.getElementById("rpdfst");if(e)e.innerHTML=pdfSt(m,recOld(m))}
+function pdfStore(f){if(f.size<=MAXPDF)return readB(f);return new Promise(function(ok,ko){if(typeof firebase.storage!="function"){ko({code:"nostorage"});return}
+ var ref=firebase.storage().ref("docs/"+CL.uid+"_"+Date.now()+".pdf"),t=ref.put(f,{contentType:"application/pdf"});
+ t.on("state_changed",function(x){var e=document.getElementById("rferr");if(e)e.textContent="Envoi du PDF… "+Math.round(100*x.bytesTransferred/x.totalBytes)+" %"},ko,function(){ref.getDownloadURL().then(ok,ko)})})}
+function pdfBtn(k,id){return '<div style="margin-top:10px"><button class="btn" onclick="pdfOpenRec(\''+k+'\',\''+id+'\')">'+ic("file",18)+' Ouvrir le PDF</button></div>'}
+function pdfOpenRec(k,id){var o=listOf(k).filter(function(x){return x.id==id})[0];if(!o||!o.pdf)return;if(String(o.pdf).slice(0,4)=="http")window.open(o.pdf,"_blank");else pdfView(o.pdf)}
+function rec2Html(m){var sc=SCH[m.k],o=recOld(m),h='<h3>'+(m.id?"Modifier":"Ajouter")+' : '+sc.title+'</h3>';
+ sc.f.forEach(function(f){var v=o[f[0]];if(f[2]=="date"&&!v&&!m.id)v=today();if(f[0]=="yr"&&!v)v=String(new Date().getFullYear());
+  h+='<label>'+f[1]+'</label>';
+  if(f[2]=="pdf")h+='<div id="rpdfst" class="mut">'+pdfSt(m,o)+'</div><div class="row" style="justify-content:flex-start;margin-top:8px"><label for="rpdff" class="btn alt">Choisir un PDF</label><button type="button" class="btn alt" onclick="rpdfClr()">Retirer</button></div><input id="rpdff" type="file" accept="application/pdf" hidden onchange="rpdfPick(this)">';
+  else if(f[2]=="photo"){var u=m.ph!==undefined?m.ph:(o.ph||"");h+='<div id="rph">'+phHtml2(u)+'</div><div class="row" style="justify-content:flex-start;margin-top:8px"><label for="rphf" class="btn alt">Choisir une photo</label><button type="button" class="btn alt" onclick="rphClr()">Retirer</button></div><input id="rphf" type="file" accept="image/*" hidden onchange="rphPick(this)">'}
+  else if(f[2]=="select")h+='<select id="rf_'+f[0]+'">'+f[3].map(function(x){return '<option'+(x==v?' selected':'')+'>'+esc(x)+'</option>'}).join("")+'</select>';
+  else if(f[2]=="member")h+='<select id="rf_'+f[0]+'"><option value="">Personne non inscrite</option>'+memList().map(function(u){return '<option value="'+u.uid+'"'+(u.uid==v?' selected':'')+'>'+esc(u.name)+'</option>'}).join("")+'</select>';
+  else if(f[2]=="textarea")h+='<textarea id="rf_'+f[0]+'" style="min-height:120px">'+esc(v||"")+'</textarea>';
+  else h+='<input id="rf_'+f[0]+'" '+(f[2]=="number"?'type="number" inputmode="numeric" min="0"':f[2]=="date"?'type="date"':'')+' value="'+esc(v===undefined?"":v)+'">'});
+ return h+'<p id="rferr" class="err"></p><div class="row"><button class="btn alt" onclick="no()">Annuler</button><button class="btn" onclick="saveRec2()">Enregistrer</button></div>'}
+function saveRec2(){var m=S.modal;if(!m||m.type!="rec2"||!S.admin)return;var sc=SCH[m.k],o={},old=recOld(m);
+ sc.f.forEach(function(f){if(f[2]=="pdf")return;if(f[2]=="photo"){o[f[0]]=m.ph!==undefined?m.ph:(old.ph||"");return}var e=document.getElementById("rf_"+f[0]),v=e?String(e.value).trim():"";if(f[2]=="number")v=v===""?0:Number(v);o[f[0]]=v});
+ var err=sc.chk(o),er=document.getElementById("rferr");
+ if(!err&&(o.amt<0||o.amt!==o.amt))err="Montant invalide.";
+ if(err){if(er){er.textContent=err;tr()}return}
+ if(m.k=="pay"){o.coti=m.ctx;o.by=CL.uid}
+ if((m.k=="pay"||m.k=="mens")&&o.uid&&S.users[o.uid])o.who=S.users[o.uid].name;
+ if(m.k=="mens"&&!m.id)o.mo={};
+ if(!m.id){o.ts=TS();o.o=Date.now()}
+ var ref=m.id?db.collection(sc.col).doc(m.id):db.collection(sc.col).doc(),pr=Promise.resolve();
+ if(sc.f.some(function(f){return f[2]=="pdf"})){if(m.pdfb){if(er)er.textContent="Enregistrement du PDF…";pr=pdfStore(m.pdfb).then(function(v){o.pdf=v})}else if(m.pdfclr)o.pdf=firebase.firestore.FieldValue.delete()}
+ pr.then(function(){return ref.set(o,{merge:true})}).then(function(){S.modal=null;draw()}).catch(function(e){var c=e&&e.code;if(er){er.textContent=c=="nostorage"||String(c).indexOf("storage/")==0?"Les PDF de plus de 650 Ko demandent d’activer Firebase Storage.":"Enregistrement impossible ("+(c||"erreur")+").";tr()}})}
+
+/* ===== Vidéos : compression avant l'envoi (réseau lent) ===== */
+function vtxt(p){return (S.vph||"Envoi de la vidéo")+"… "+p+" %"}
+function vidShrink(f,prog){return new Promise(function(ok){
+ var fb=function(){ok(f)};
+ try{
+  var AC=window.AudioContext||window.webkitAudioContext;
+  if(f.size<4*1024*1024||typeof MediaRecorder=="undefined"||!AC||!HTMLCanvasElement.prototype.captureStream)return fb();
+  var mt=["video/webm;codecs=vp8,opus","video/webm","video/mp4"].filter(function(t){return MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t)})[0];
+  if(!mt)return fb();
+  var v=document.createElement("video"),u=URL.createObjectURL(f),ac=new AC(),fin=0,iv=0,raf=0,tm;
+  var end=function(r){if(fin)return;fin=1;clearTimeout(tm);clearInterval(iv);cancelAnimationFrame(raf);try{URL.revokeObjectURL(u)}catch(e){}try{ac.close()}catch(e){}r()};
+  v.playsInline=true;v.setAttribute("playsinline","");v.preload="auto";v.src=u;
+  tm=setTimeout(function(){end(fb)},20000);
+  v.onerror=function(){end(fb)};
+  v.onloadedmetadata=function(){clearTimeout(tm);
+   var d=v.duration;if(!(d>0)||d>600||!v.videoWidth)return end(fb);
+   var k=Math.min(1,480/Math.max(v.videoWidth,v.videoHeight)),cw=Math.round(v.videoWidth*k/2)*2,chh=Math.round(v.videoHeight*k/2)*2,cv=document.createElement("canvas");cv.width=cw;cv.height=chh;var cx=cv.getContext("2d");
+   var dst=ac.createMediaStreamDestination();ac.createMediaElementSource(v).connect(dst);
+   var ms=new MediaStream(cv.captureStream(24).getVideoTracks().concat(dst.stream.getAudioTracks())),
+   mr=new MediaRecorder(ms,{mimeType:mt,videoBitsPerSecond:400000,audioBitsPerSecond:40000}),parts=[];
+   mr.ondataavailable=function(e){if(e.data&&e.data.size)parts.push(e.data)};
+   mr.onstop=function(){var b=new Blob(parts,{type:mt.split(";")[0]});b.name="video."+(/mp4/.test(mt)?"mp4":"webm");end(function(){ok(b.size>20000&&b.size<f.size?b:f)})};
+   var loop=function(){cx.drawImage(v,0,0,cw,chh);raf=requestAnimationFrame(loop)};
+   iv=setInterval(function(){if(prog)prog(Math.min(99,Math.round(100*v.currentTime/d)))},500);
+   v.onended=function(){try{mr.stop()}catch(e){end(fb)}};
+   if(ac.resume)ac.resume();
+   mr.start(1000);loop();
+   var pr=v.play();if(pr&&pr.catch)pr.catch(function(){try{mr.onstop=null;mr.stop()}catch(e){}end(fb)})};
+ }catch(e){fb()}})}
+function vidUp(f,folder,prog){return vidShrink(f,function(p){S.vph="Préparation de la vidéo";if(prog)prog(p)}).then(function(g){return new Promise(function(ok,ko){
+ if(typeof firebase.storage!="function"){ko({code:"nostorage"});return}
+ if(g.size>MAXVID){ko({code:"bigvid"});return}
+ S.vph="Envoi de la vidéo";if(prog)prog(0);
+ var ty=g.type||"video/mp4",ext=/webm/.test(ty)?"webm":(/mp4|quicktime/.test(ty)?"mp4":((f.name||"").split(".").pop().toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,4)||"mp4")),
+ ref=firebase.storage().ref(folder+"/"+CL.uid+"_"+Date.now()+"."+ext),t=ref.put(g,{contentType:ty}),got=0,wd=setTimeout(function(){if(!got){try{t.cancel()}catch(e){}ko({code:"slow"})}},45000);
+ t.on("state_changed",function(x){if(x.bytesTransferred>0)got=1;if(prog)prog(Math.round(100*x.bytesTransferred/x.totalBytes))},function(e){clearTimeout(wd);ko(e)},function(){clearTimeout(wd);ref.getDownloadURL().then(ok,ko)})})})}
+function vidErr(e){var c=e&&e.code;
+ if(c=="bigvid")return "Vidéo trop lourde (50 Mo maximum, même après compression). Choisissez une vidéo plus courte.";
+ if(c=="slow")return "L’envoi ne démarre pas : connexion trop lente, ou Firebase Storage pas encore activé. Réessayez avec le Wi-Fi.";
+ if(c=="nostorage"||c=="storage/unauthorized"||c=="storage/unauthenticated"||c=="storage/bucket-not-found"||c=="storage/project-not-found"||c=="storage/quota-exceeded")return "Envoi refusé : les vidéos ne sont pas encore activées sur le serveur (Firebase Storage).";
+ if(c=="storage/retry-limit-exceeded"||c=="storage/canceled")return "Envoi interrompu. Vérifiez votre connexion et réessayez.";
+ return "Envoi de la vidéo impossible ("+(c||"erreur")+")."}
+
+/* ===== Social : télécharger les photos, affiches et vidéos publiées ===== */
+var _postDl=post;
+post=function(p,i){var h=_postDl(p,i);if(!p||(p.k!="img"&&p.k!="vid")||!p.m)return h;var j=h.lastIndexOf('</div></div>');if(j<0)return h;
+ return h.slice(0,j)+'<button class="btn alt" onclick="dlPost('+i+')">⬇️ Télécharger</button>'+h.slice(j)};
+function dlSave(b,name){var a=document.createElement("a"),u=URL.createObjectURL(b);a.href=u;a.download=name;a.style.display="none";document.body.appendChild(a);a.click();setTimeout(function(){try{a.remove();URL.revokeObjectURL(u)}catch(e){}},5000)}
+function dlName(p,b){var t=(b&&b.type)||"",e=/png/.test(t)?"png":/webp/.test(t)?"webp":/gif/.test(t)?"gif":/jpe?g/.test(t)?"jpg":/webm/.test(t)?"webm":/quicktime/.test(t)?"mov":/mp4/.test(t)?"mp4":(p.k=="vid"?"mp4":"jpg"),d=new Date();
+ return "AJCAL-"+(p.k=="vid"?"video":"affiche")+"-"+d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate())+"-"+pad2(d.getHours())+pad2(d.getMinutes())+"."+e}
+function dlPost(i){var p=S.posts[i];if(!p||!p.m)return;var m=String(p.m);
+ if(m.slice(0,4)=="http"){info("Téléchargement en cours…");
+  fetch(m).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){S.modal=null;draw();dlSave(b,dlName(p,b))}).catch(function(){S.modal=null;draw();window.open(m,"_blank")});return}
+ mget(m).then(function(b){if(!b)throw 0;dlSave(b,dlName(p,b))}).catch(function(){info("Téléchargement impossible. Réessayez.")})}
+
+/* ===== Social : commentaires sous chaque publication ===== */
+function ensureCom(id){CL.csub=CL.csub||{};CL.cm=CL.cm||{};if(CL.csub[id])return;
+ CL.csub[id]=db.collection("posts").doc(id).collection("comments").onSnapshot(function(q){
+  CL.cm[id]=q.docs.map(function(d){var o=mapDoc(d);return {id:o.id,uid:o.uid,an:o.an||"Membre",t:o.t||"",ts:tms(o)}}).sort(function(a,b){return a.ts-b.ts});
+  var a=document.activeElement;if(a&&a.id&&a.id.indexOf("cmi_")==0){S.cmPend=1;return}rd()},function(e){console.warn("comments",e&&e.code)})}
+function cmToggle(id){S.cmo=S.cmo||{};S.cmo[id]=!S.cmo[id];draw()}
+function cmBlock(id,C){S.cmd=S.cmd||{};
+ return '<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px">'+
+ (C.length?C.map(function(c){var mine=c.uid&&c.uid==CL.uid;return '<div class="row" style="align-items:flex-start;justify-content:flex-start;gap:10px;margin:8px 0">'+avU(c.uid,c.an)+'<div style="flex:1;min-width:0"><b>'+esc(c.an)+'</b> <span class="mut">'+esc(fdate(c.ts))+'</span><div style="white-space:pre-wrap;word-break:break-word">'+esc(c.t)+'</div></div>'+((mine||S.admin)?'<button class="back" style="padding:0 4px;opacity:.7" aria-label="Supprimer le commentaire" onclick="cmDel(\''+id+'\',\''+c.id+'\')">🗑️</button>':'')+'</div>'}).join(""):'<p class="mut" style="margin:4px 0 8px">Aucun commentaire pour le moment. Soyez le premier ✨</p>')+
+ (S.me?'<div class="row" style="gap:8px;margin-top:8px"><input id="cmi_'+id+'" placeholder="Écrire un commentaire…" maxlength="500" value="'+esc(S.cmd[id]||"")+'" oninput="S.cmd[\''+id+'\']=this.value" onblur="if(S.cmPend){S.cmPend=0;draw()}" onkeydown="if(event.key===\'Enter\')cmSend(\''+id+'\')"><button class="btn" onclick="cmSend(\''+id+'\')">Envoyer</button></div>':'<p class="mut">Inscrivez-vous pour commenter.</p>')+'</div>'}
+function cmSend(id){if(!S.me)return;var e=document.getElementById("cmi_"+id),t=(e?e.value:((S.cmd||{})[id]||"")).trim();if(!t)return;if(t.length>500)t=t.slice(0,500);
+ db.collection("posts").doc(id).collection("comments").add({uid:CL.uid,an:S.me.n||"Membre",t:t,ts:TS()}).then(function(){S.cmd[id]="";var x=document.getElementById("cmi_"+id);if(x)x.value=""}).catch(function(er){info("Commentaire impossible ("+((er&&er.code)||"erreur")+").")})}
+function cmDel(pid,cid){ask("Supprimer ce commentaire ?",function(){db.collection("posts").doc(pid).collection("comments").doc(cid).delete().catch(fail2)},"Supprimer")}
+var _postCm=post;
+post=function(p,i){var h=_postCm(p,i);if(!p||!p.id)return h;if(i<30)ensureCom(p.id);var C=(CL.cm||{})[p.id]||[],j=h.lastIndexOf('</div></div>');if(j<0)return h;
+ return h.slice(0,j)+'<button class="btn alt" onclick="cmToggle(\''+p.id+'\')">💬 '+(C.length?C.length+' ':'')+'Commentaires</button></div>'+((S.cmo||{})[p.id]?cmBlock(p.id,C):'')+'</div>'};
+
+/* ===== Mise à jour : hors connexion, agenda, présences, dernière visite, exports, notifications, recherche ===== */
+if("serviceWorker" in navigator&&/^https?:/.test(location.protocol))window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});
+(function(){if(window._calSt3)return;window._calSt3=1;var st=document.createElement("style");st.textContent=".bell{position:relative;cursor:pointer}.bell .nb{position:absolute;top:-6px;right:-6px;background:#E03131;color:#fff;border-radius:10px;font-size:11px;font-weight:800;min-width:18px;height:18px;line-height:18px;text-align:center;padding:0 4px}";document.head.appendChild(st)})();
+
+/* --- Agenda du téléphone (.ics) --- */
+var ICSD=["SU","MO","TU","WE","TH","FR","SA"];
+function icsEsc(t){return String(t||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;")}
+function icsDt(d,h,m){return d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate())+"T"+pad2(h)+pad2(m)+"00"}
+function icsD(d){return d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate())}
+function evIcs(o){var t=new Date(),td=new Date(t.getFullYear(),t.getMonth(),t.getDate()),d=null,rr="",i;
+ if(o.rec=="w"){var ds=(o.days||[]).slice();if(!ds.length)return"";if(o.date)d=calDate(o);
+  if(!d||d<td){for(i=0;i<7;i++){var x=new Date(td.getFullYear(),td.getMonth(),td.getDate()+i);if(ds.indexOf(x.getDay())>=0){d=x;break}}}
+  rr="RRULE:FREQ=WEEKLY;BYDAY="+ds.map(function(x){return ICSD[x]}).join(",")}
+ else d=calDate(o);
+ if(!d)return"";
+ var mt=String(o.h||"").match(/(\d{1,2})\s*[hH:]\s*(\d{2})?/),
+ L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//AJCAL//My AJCAL//FR","CALSCALE:GREGORIAN","BEGIN:VEVENT","UID:"+(o.id||Date.now())+"@ajcal","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,""),"SUMMARY:"+icsEsc(evEmoji(o)+" "+o.t)];
+ if(mt){var hh=Math.min(23,+mt[1]),mm=Math.min(59,+(mt[2]||0)),e=new Date(d.getFullYear(),d.getMonth(),d.getDate(),hh+2,mm);L.push("DTSTART:"+icsDt(d,hh,mm),"DTEND:"+icsDt(e,e.getHours(),e.getMinutes()))}
+ else{var n=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1);L.push("DTSTART;VALUE=DATE:"+icsD(d),"DTEND;VALUE=DATE:"+icsD(n))}
+ if(rr)L.push(rr);if(o.lieu)L.push("LOCATION:"+icsEsc(o.lieu));if(o.d)L.push("DESCRIPTION:"+icsEsc(o.d));
+ L.push("BEGIN:VALARM","TRIGGER:-PT1H","ACTION:DISPLAY","DESCRIPTION:Rappel AJCAL","END:VALARM","END:VEVENT","END:VCALENDAR");return L.join("\r\n")}
+function evCal(i){var o=(S.data.events||[])[i];if(!o)return;var x=evIcs(o);if(!x){info("Cet événement n’a pas de date.");return}dlSave(new Blob([x],{type:"text/calendar;charset=utf-8"}),"evenement-ajcal.ics")}
+var _calCard2=calCard;calCard=function(r){var h=_calCard2(r);if(!r||r.leg||r.i<0)return h;var j=h.lastIndexOf("</div>");return h.slice(0,j)+'<div style="margin-top:10px"><button class="btn alt" onclick="evCal('+r.i+')">📲 Ajouter à mon agenda</button></div></div>'};
+var _evFull2=evFull;evFull=function(x){var h=_evFull2(x),j=h.lastIndexOf("</div>");return h.slice(0,j)+'<div style="margin-top:10px"><button class="btn alt" onclick="evCal('+x.i+')">📲 Ajouter à mon agenda</button></div></div>'};
+
+/* --- Dernière visite des membres --- */
+function lastDays(u){var l=u&&u.last;if(!l||!l.toMillis)return null;return Math.floor((Date.now()-l.toMillis())/86400000)}
+function lastTxt(u){var d=lastDays(u);if(d==null)return "Dernière visite : inconnue";return "Dernière visite : "+(d<=0?"aujourd’hui":d==1?"hier":"il y a "+d+" jours")}
+function touchLast(){if(!S.me||!CL.uid||CL.touched)return;CL.touched=1;var u=S.users[CL.uid],l=u&&u.last&&u.last.toMillis?u.last.toMillis():0;if(Date.now()-l>6*3600*1000)db.doc("users/"+CL.uid).set({last:TS()},{merge:true}).catch(function(){})}
+var _memRow=memRow;memRow=function(u){var d=lastDays(u),h=_memRow(u),old=d!=null&&d>=60;return h.replace("</b>",'</b><br><span class="mut" style="font-size:12px;'+(old?'color:#C0392B;font-weight:700':'')+'">'+(old?'⚠️ ':'')+lastTxt(u)+'</span>')};
+var _memPage=memPage;memPage=function(){var h=_memPage(),ina=memList().filter(function(u){var d=lastDays(u);return d!=null&&d>=60});if(!ina.length)return h;var k=h.indexOf("<h3>");return h.slice(0,k)+'<h3>⚠️ Inactifs depuis plus de 60 jours ('+ina.length+')</h3>'+ina.map(memRow).join("")+h.slice(k)};
+var _memDetail2=memDetail;memDetail=function(uid){var h=_memDetail2(uid);return S.users[uid]?h.replace("<h3>Rôle au bureau</h3>",'<p class="mut" style="margin:8px 0 0">'+lastTxt(S.users[uid])+'</p><h3>Rôle au bureau</h3>'):h};
+
+/* --- Exports Excel (CSV) --- */
+function csvCell(v){v=String(v==null?"":v);return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function csvDl(name,rows){var t="\ufeff"+rows.map(function(r){return r.map(csvCell).join(";")}).join("\r\n");dlSave(new Blob([t],{type:"text/csv;charset=utf-8"}),name)}
+function expCaisse(){if(!S.admin)return;csvDl("caisse-ajcal.csv",[["Date","Type","Libellé","Montant (FCFA)"]].concat((CL.caisse||[]).slice().sort(function(a,b){return String(a.dt).localeCompare(String(b.dt))}).map(function(x){return [x.dt,x.ty,x.lb,num(x.amt)]})))}
+function expMens(){if(!S.admin)return;csvDl("mensualites-ajcal.csv",[["Nom","Année","Montant mensuel (FCFA)"].concat(MO).concat(["Mois payés","Total versé (FCFA)"])].concat((CL.mens||[]).slice().sort(function(a,b){return (num(a.yr)-num(b.yr))||String(a.who).localeCompare(String(b.who),"fr")}).map(function(x){return [x.who||"",x.yr,num(x.amt)].concat(MO.map(function(m,i){return x.mo&&x.mo[i+1]?"Oui":""})).concat([nMo(x),nMo(x)*num(x.amt)])})))}
+function expPay(){if(!S.admin)return;csvDl("cotisations-ajcal.csv",[["Date","Nom","Cotisation","Montant (FCFA)","Note"]].concat((CL.allPay||[]).slice().sort(function(a,b){return String(a.dt).localeCompare(String(b.dt))}).map(function(x){var c=(CL.coti||[]).filter(function(k){return k.id==x.coti})[0]||{};return [x.dt,x.who||"",c.n||"",num(x.amt),x.nt||""]})))}
+var _finPage=finPage;finPage=function(){var h=_finPage();if(!S.admin)return h;return h+'<h3>Exporter vers Excel</h3><div class="row" style="justify-content:flex-start;gap:8px;flex-wrap:wrap"><button class="btn alt" onclick="expCaisse()">⬇️ Caisse</button><button class="btn alt" onclick="expMens()">⬇️ Mensualités</button><button class="btn alt" onclick="expPay()">⬇️ Cotisations</button></div>'};
+
+/* --- Liste d'appel des répétitions --- */
+function presStats(){var y=String(new Date().getFullYear()),ses=(CL.pres||[]).filter(function(p){return String(p.id).slice(0,4)==y}),n={};ses.forEach(function(p){var ps=p.ps||{};Object.keys(ps).forEach(function(u){if(ps[u])n[u]=(n[u]||0)+1})});return {N:ses.length,n:n}}
+function presDate(v){if(!/^\d{4}-\d{2}-\d{2}$/.test(v||""))return;S.pd=v;S.ckeep=1;draw()}
+function presTog(uid){if(!S.admin)return;var d=S.pd||today(),x=(CL.pres||[]).filter(function(p){return p.id==d})[0],cur=!!(x&&x.ps&&x.ps[uid]),o={};o[uid]=!cur;db.collection("presences").doc(d).set({date:d,ps:o,by:CL.uid,ts:TS()},{merge:true}).catch(fail2)}
+function presCsv(){if(!S.admin)return;var st=presStats();csvDl("presences-ajcal-"+new Date().getFullYear()+".csv",[["Nom","Séances présentes","Séances en tout","Taux (%)"]].concat(memList().map(function(u){var n=st.n[u.uid]||0;return [u.name,n,st.N,st.N?Math.round(100*n/st.N):0]})))}
+function presPage(){var d=S.pd||today(),st=presStats(),x=(CL.pres||[]).filter(function(p){return p.id==d})[0],ps=(x&&x.ps)||{},us=memList(),here=us.filter(function(u){return ps[u.uid]}).length,q=d.split("-"),dt=new Date(+q[0],+q[1]-1,+q[2]),yy=new Date().getFullYear();
+ return backTo("")+'<h2>Présences aux répétitions</h2><div class="card"><label>Date de la séance</label><input id="pdt" type="date" value="'+esc(d)+'" onchange="presDate(this.value)"><p class="mut" style="margin:8px 0 0">'+JOURS[dt.getDay()]+' '+dt.getDate()+' '+MOIS[dt.getMonth()].toLowerCase()+' '+dt.getFullYear()+' · <b>'+here+' présent(s)</b> sur '+us.length+'</p></div><h3>Appel</h3>'+
+ us.map(function(u){var on=!!ps[u.uid],n=st.n[u.uid]||0;return '<button class="li row" onclick="presTog(\''+u.uid+'\')" style="border:2px solid '+(on?'#0E9F6E':'transparent')+';background:'+(on?'#0E9F6E1F':'')+'"><span class="lab">'+avU(u.uid,u.name)+'<span><b>'+esc(u.name)+'</b><br><span class="mut" style="font-size:12px">'+n+' / '+st.N+' séance(s) en '+yy+(st.N?' · '+Math.round(100*n/st.N)+' %':'')+'</span></span></span><span style="font-size:22px">'+(on?'✅':'⬜')+'</span></button>'}).join("")+
+ '<button class="btn alt" style="margin-top:12px" onclick="presCsv()">⬇️ Exporter les présences (CSV)</button>'}
+var _burRoute=burRoute;burRoute=function(s){return s=="bur-pres"?presPage():_burRoute(s)};
+var _asso=asso;asso=function(){var h=_asso();if(S.sub||!S.admin)return h;return h.replace('</div><p class="mut">',arow("users","t7","Présences aux répétitions",(CL.pres||[]).length+" séance(s)","bur-pres")+'</div><p class="mut">')};
+var _staffSubs=staffSubs;staffSubs=function(){_staffSubs();if(S.admin)sub("pres",db.collection("presences"),function(q){CL.pres=mdocs(q.docs);rd()});else{if(CL.unsubs.pres){CL.unsubs.pres();delete CL.unsubs.pres}CL.pres=[]}};
+
+/* --- Notifications dans l'application --- */
+function nSeen(){try{return +localStorage.getItem("ajcal_seen")||0}catch(e){return 0}}
+function nSet(v){try{localStorage.setItem("ajcal_seen",String(v))}catch(e){}}
+function nHas(){try{return localStorage.getItem("ajcal_seen")!==null}catch(e){return true}}
+function nItems(){var it=[],me=CL.uid;
+ (CL.postDocs||[]).forEach(function(p){if(p.uid==me)return;it.push({ts:tms(p),ic:"📣",t:(p.an||"Un membre")+" a publié"+(p.t?" : "+String(p.t).slice(0,70):(p.k=="vid"?" une vidéo":p.k=="img"?" une photo":"")),go:["social",null]})});
+ (S.data.events||[]).forEach(function(o){if(o.o&&o.rec!="w")it.push({ts:o.o,ic:evEmoji(o),t:"Nouvel événement : "+o.t,go:["accueil",null],k:o.date||""})});
+ (S.data.coms||[]).forEach(function(c,i){(S.groups[c.t]||[]).forEach(function(g){if(g.uid==me)return;it.push({ts:g.ts,ic:"💬",t:(g.a||"Un membre")+" dans "+c.t+(g.t?" : "+String(g.t).slice(0,60):""),go:["commissions",i]})})});
+ return it.sort(function(a,b){return b.ts-a.ts})}
+function bellUpd(){var b=document.querySelector(".bell");if(!b||!S.me)return;
+ if(!b._ok){b._ok=1;b.onclick=function(){S.nprev=null;go("profil","notif")}}
+ if(!nHas())nSet(Date.now());
+ var n=nItems().filter(function(x){return x.ts>nSeen()}).length,e=b.querySelector(".nb");
+ if(!n){if(e)e.remove();return}if(!e){e=document.createElement("b");e.className="nb";b.appendChild(e)}e.textContent=n>9?"9+":String(n)}
+function nAsk(){if(typeof Notification=="undefined")return;Notification.requestPermission().then(function(){draw()}).catch(function(){})}
+function nGo(i){var x=(S.nlist||[])[i];if(!x)return;if(x.k){go("accueil");calJump(x.k)}else go(x.go[0],x.go[1])}
+function notifPage(){var prev=S.nprev!=null?S.nprev:(S.nprev=nSeen()),it=nItems().slice(0,40),perm=typeof Notification!="undefined"?Notification.permission:"unsupported";S.nlist=it;nSet(Date.now());setTimeout(bellUpd,0);
+ return back()+'<h2>Mes notifications</h2><div class="card"><b>Alertes sur ce téléphone</b><p class="mut" style="margin:6px 0 10px">'+(perm=="granted"?"✅ Activées : vous êtes prévenu des nouveautés quand l’application reste ouverte en arrière-plan.":perm=="denied"?"Bloquées dans le navigateur. Autorisez les notifications pour ce site dans les réglages de Chrome.":perm=="unsupported"?"Non disponibles sur ce téléphone.":"Recevez une alerte pour les nouveautés quand l’application reste ouverte en arrière-plan.")+'</p>'+(perm=="default"?'<button class="btn" onclick="nAsk()">🔔 Activer les alertes</button>':'')+'</div><h3>Nouveautés</h3>'+
+ (it.length?it.map(function(x,i){var nw=x.ts>prev;return '<button class="li row" onclick="nGo('+i+')" style="'+(nw?'border:2px solid var(--or)':'')+'"><span class="lab"><span style="font-size:22px">'+x.ic+'</span><span><b>'+esc(x.t)+'</b><br><span class="mut">'+esc(fdate(x.ts))+'</span></span></span>'+(nw?'<span class="tag">Nouveau</span>':'<span class="mut">›</span>')+'</button>'}).join(""):'<div class="card mut">Rien de nouveau pour le moment.</div>')}
+function notifLocal(){if(typeof Notification=="undefined"||Notification.permission!="granted"||!S.me)return;if(!document.hidden){CL.nlast=Date.now();return}var t=CL.nlast||(CL.nlast=Date.now()),it=nItems().filter(function(x){return x.ts>t});if(!it.length)return;CL.nlast=Math.max.apply(null,it.map(function(x){return x.ts}));
+ try{var x=it[0];new Notification("My AJCAL",{body:x.ic+" "+x.t+(it.length>1?" (+"+(it.length-1)+")":""),icon:"icon-192.png",tag:"ajcal"})}catch(e){}}
+var _rdN=rd;rd=function(){_rdN();touchLast();bellUpd();notifLocal()};
+
+/* --- Recherche dans les chants --- */
+function cqDraw(){clearTimeout(S.cqt);S.cqt=setTimeout(function(){S.ckeep=1;draw();var e=document.getElementById("cq");if(e){e.focus();var l=e.value.length;try{e.setSelectionRange(l,l)}catch(x){}}},250)}
+var _musS=musique;musique=function(){var h=_musS(),C=S.data.chants;if(S.sub!=null&&C[S.sub])return h;if(S.mus=="ex"||h.indexOf("<h2>Répertoire de chants</h2>")<0)return h;
+ var q=String(S.cq||"").toLowerCase().trim();
+ if(q)h=h.replace(/<button class="li row" onclick="go\('musique',\d+\)">[\s\S]*?<\/button>/g,function(m){return m.replace(/<[^>]+>/g,"").toLowerCase().indexOf(q)>=0?m:""});
+ return h.replace("<h2>Répertoire de chants</h2>",'<h2>Répertoire de chants</h2><input id="cq" placeholder="🔍 Rechercher un chant…" value="'+esc(S.cq||"")+'" oninput="S.cq=this.value;cqDraw()" style="margin-bottom:10px">')};
+
+/* ===== Anniversaires et publications épinglées ===== */
+function bdVal(){var u=S.users[CL.uid],b=u&&u.bd;return /^\d{2}-\d{2}$/.test(b||"")?"2000-"+b:""}
+function bdRead(){var e=document.getElementById("ibd"),v=e?e.value:"";return /^\d{4}-\d{2}-\d{2}$/.test(v)?v.slice(5):""}
+function bdBox(){var t=new Date(),td=new Date(t.getFullYear(),t.getMonth(),t.getDate()),a=[];
+ Object.keys(S.users).forEach(function(id){var u=S.users[id],b=u&&u.bd;if(!/^\d{2}-\d{2}$/.test(b||""))return;var m=+b.slice(0,2)-1,d=+b.slice(3),x=new Date(td.getFullYear(),m,d);if(x<td)x=new Date(td.getFullYear()+1,m,d);var n=Math.round((x-td)/86400000);if(n<=7)a.push({n:n,name:u.name||"Membre"})});
+ if(!a.length)return"";a.sort(function(x,y){return x.n-y.n});
+ return '<div class="card" style="border:2px solid #D6336C;background:#FFF0F6;color:#3B0A1E"><b>🎂 Anniversaires</b>'+a.map(function(x){return '<div style="margin-top:4px">'+esc(x.name)+' · '+(x.n==0?"<b>aujourd’hui 🎉</b>":x.n==1?"demain":"dans "+x.n+" jours")+'</div>'}).join("")+'</div>'}
+var _calSoonB=calSoon;calSoon=function(){var h=_calSoonB(),k=h.indexOf("</h3>");return k<0?h:h.slice(0,k+5)+bdBox()+h.slice(k+5)};
+var _bPin=buildPosts;buildPosts=function(){_bPin();var pin={};(CL.postDocs||[]).forEach(function(d){if(d.pin)pin[d.id]=1});
+ S.posts=S.posts.map(function(p,i){p.pin=pin[p.id]?1:0;return {p:p,i:i}}).sort(function(a,b){return (b.p.pin-a.p.pin)||(a.i-b.i)}).map(function(x){return x.p})};
+function pinPost(i){var p=S.posts[i];if(!S.admin||!p||!p.id)return;db.collection("posts").doc(p.id).update({pin:!p.pin}).catch(fail2)}
+var _postPin=post;post=function(p,i){var h=_postPin(p,i);if(!p||!p.id)return h;
+ if(S.admin){var j=h.lastIndexOf('</div></div>');if(j>=0)h=h.slice(0,j)+'<button class="btn alt" onclick="pinPost('+i+')">📌 '+(p.pin?"Désépingler":"Épingler")+'</button>'+h.slice(j)}
+ return p.pin?h.replace('>','><div class="mut" style="font-weight:700;margin-bottom:6px">📌 Épinglé</div>'):h};
 </script>
 </body>
 </html>
